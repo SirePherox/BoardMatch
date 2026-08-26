@@ -30,10 +30,20 @@ namespace BoardMatch.Game
                 int[,] grid = boardView.Board.GetGridForTesting();
                 MatchLog.FormatGrid(grid);
             }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                SetupAGame();
+            }
         }
 
         private void SetupAGame()
         {
+            foreach (GemView gem in gameObject.GetComponentsInChildren<GemView>())
+            {
+                Destroy(gem.gameObject);
+            }
+            
             IRandomGemProvider unityRandom = new UnityRandomGemProvider(gameConfig.boardSeed != -1 ? gameConfig.boardSeed : null);
             _board = new BoardModel(matchConfig, unityRandom);
             

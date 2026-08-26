@@ -62,6 +62,7 @@ namespace BoardMatch.Core
             _grid = new int[_width, _height];
             _availableGemTypes = (int[])config.availableGemTypes.Clone();
             _randomGemProvider = randomGemProvider;
+            _minMatchCount = config.minMatchCount;
             
             PopulateBoardUniquely();
         }
@@ -97,17 +98,47 @@ namespace BoardMatch.Core
             {
                 for (int x = 0; x < _width; x++)
                 {
-                    int gemType = _randomGemProvider.GetRandomGem(_availableGemTypes);
+                    //Attempts to fill - using max attempts
+                    int gemTypeToUse = _randomGemProvider.GetRandomGem(_availableGemTypes);
                     int attempts = 1;
-
-                    while (WouldCompleteAMatchAt(x, y, gemType) &&
-                           attempts < MaxAttemptPerCell)
+                    while (WouldCompleteAMatchAt(x, y, gemTypeToUse) && attempts < MaxAttemptPerCell)
                     {
-                        gemType = _randomGemProvider.GetRandomGem(_availableGemTypes);
+                        gemTypeToUse = _randomGemProvider.GetRandomGem(_availableGemTypes);
                         attempts++;
                     }
+
+                    //if we used all attempts and still haven't found
+                    if (attempts >= MaxAttemptPerCell &&
+                        WouldCompleteAMatchAt(x, y, gemTypeToUse))
+                    {
+                        List<int> validGemTypes = new List<int>();
+            
+                        foreach (int gemType in _availableGemTypes)
+                        {
+                            if (!WouldCompleteAMatchAt(x, y, gemType))
+                            {
+                                validGemTypes.Add(gemType);
+                            }
+                        }
+
+                        if (validGemTypes.Count > 0)
+                        {
+                            // Pick randomly from the safe, pre-filtered list
+                            _grid[x, y] =  _randomGemProvider.GetRandomGem(validGemTypes.ToArray());
+                        }
+                        else
+                        {
+                            _grid[x, y] = _randomGemProvider.GetRandomGem(_availableGemTypes);
+                            MatchLog.Log($"[BoardModel] Could not find a match-free gem at ({x}, {y}). " +
+                                         $"Consider adding more gem types to MatchConfig.");
+                        }
+                    }
+                    else
+                    {
+                        _grid[x, y] = gemTypeToUse;
+                    }
                     
-                    _grid[x, y] = gemType;
+                    
                 }
             }
         }

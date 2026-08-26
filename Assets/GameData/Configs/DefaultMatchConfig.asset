@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: DefaultMatchConfig
   m_EditorClassIdentifier: Assembly-CSharp::BoardMatch.Core.MatchConfig
   width: 4
-  height: 4
+  height: 6
   minMatchCount: 3
-  availableGemTypes: 0000000001000000020000000300000004000000
+  availableGemTypes: 00000000010000000200000003000000040000000500000006000000

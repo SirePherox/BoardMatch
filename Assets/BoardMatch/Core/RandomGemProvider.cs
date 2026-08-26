@@ -25,7 +25,6 @@ namespace BoardMatch.Core
         public int GetRandomGem(int[] availableGemTypes)
         {
             int index = Random.Range(0, availableGemTypes.Length);
-            MatchLog.Log($"Getting {index} which is {availableGemTypes[index]} from {availableGemTypes.Length}");
             return availableGemTypes[index];
         }
     }
