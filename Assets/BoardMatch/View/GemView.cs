@@ -13,19 +13,21 @@ namespace BoardMatch.View
         public int GemTypeId { get; private set; }
         private Coroutine _activeMove;
 
-        private void Awake()
+        private void Start()
         {
-            CacheSelfComponents();
+            CacheRenderer();
         }
 
-        private void CacheSelfComponents()
+        private void CacheRenderer()
         {
             //Fallback ONLY, incase of Null Reference in editor
-            if(!spriteRenderer) spriteRenderer = GetComponent<SpriteRenderer>();
+            if(!spriteRenderer) spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         }
 
         public void Setup(int gemType, Color color, Vector3 worldPosition)
         {
+            CacheRenderer();
+                
             GemTypeId = gemType;
             spriteRenderer.color = color;
             transform.position = worldPosition;

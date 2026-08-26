@@ -14,9 +14,9 @@ namespace BoardMatch.View
         [SerializeField] private GemVisualConfig visualConfig;
         [SerializeField] private GameConfig gameConfig;
         [SerializeField] private Transform boardOrigin;
-        [SerializeField] private float cellSize = 1f;
-        [SerializeField] private float moveDuration = 0.15f;
-        [SerializeField] private float clearDuration = 0.1f;
+        private float _cellSize = 1f;
+        private float _moveDuration = 0.15f;
+        private float _clearDuration = 0.1f;
         [Space]
         private Dictionary<Vector2Int, GemView> _gemsViews = new();
         public BoardModel Board { get; private set; }
@@ -36,9 +36,9 @@ namespace BoardMatch.View
         {
             if (gameConfig)
             {
-                moveDuration = gameConfig.moveDuration;
-                clearDuration = gameConfig.clearDuration;
-                cellSize = gameConfig.cellSize;
+                _moveDuration = gameConfig.moveDuration;
+                _clearDuration = gameConfig.clearDuration;
+                _cellSize = gameConfig.cellSize;
             }
            
         }
@@ -83,8 +83,8 @@ namespace BoardMatch.View
             _gemsViews[a] = gemViewB;
             _gemsViews[b] = gemViewA;
             
-            gemViewA.MoveTo(GetWorldPosition(b), moveDuration);
-            gemViewB.MoveTo(GetWorldPosition(a), moveDuration);
+            gemViewA.MoveTo(GetWorldPosition(b), _moveDuration);
+            gemViewB.MoveTo(GetWorldPosition(a), _moveDuration);
         }
 
         private void HandleMatchesCleared(IReadOnlyList<Match> matches)
@@ -104,7 +104,7 @@ namespace BoardMatch.View
             {
                 if (_gemsViews.TryGetValue(cell, out var gemView))
                 {
-                    gemView.ClearAndDestroy(clearDuration);
+                    gemView.ClearAndDestroy(_clearDuration);
                 }
             }
         }
@@ -117,7 +117,7 @@ namespace BoardMatch.View
 
                 _gemsViews.Remove(gemFall.From);
                 _gemsViews[gemFall.To] = gemView;
-                gemView.MoveTo(GetWorldPosition(gemFall.To), moveDuration);
+                gemView.MoveTo(GetWorldPosition(gemFall.To), _moveDuration);
             }
         }
 
@@ -133,7 +133,7 @@ namespace BoardMatch.View
         {
             GemView clone = Instantiate(gemPrefab, transform); //TOdo can use pool
             Vector3 targetWorldPos = GetWorldPosition(gridPosition);
-            Vector3 spawnWorldPos = gameConfig.spawnAboveBoard ? targetWorldPos + new Vector3(0f, (Board.Height - gridPosition.y) * cellSize, 0f)
+            Vector3 spawnWorldPos = gameConfig.spawnAboveBoard ? targetWorldPos + new Vector3(0f, (Board.Height - gridPosition.y) * _cellSize, 0f)
                 : targetWorldPos;
             
             clone.Setup(gemTypeId, visualConfig.GetColor(gemTypeId), spawnWorldPos);
@@ -141,14 +141,14 @@ namespace BoardMatch.View
 
             if (gameConfig.spawnAboveBoard)
             {
-                clone.MoveTo(targetWorldPos, moveDuration);
+                clone.MoveTo(targetWorldPos, _moveDuration);
             }
             
         }
         public Vector3 GetWorldPosition(Vector2Int gridPos)
         {
             Vector3 origin = boardOrigin ? boardOrigin.position : Vector3.zero;
-            return origin + new Vector3(gridPos. x * cellSize, gridPos.y * cellSize, 0f);
+            return origin + new Vector3(gridPos. x * _cellSize, gridPos.y * _cellSize, 0f);
         }
 
         public bool TryGetGridPosition(Vector3 worldPos, out Vector2Int gridPos)
@@ -156,7 +156,7 @@ namespace BoardMatch.View
             Vector3 origin = boardOrigin ? boardOrigin.position : Vector3.zero;
             Vector3 local = worldPos - origin;
             
-            gridPos = new Vector2Int(Mathf.RoundToInt(local.x / cellSize), Mathf.RoundToInt(local.z / cellSize));
+            gridPos = new Vector2Int(Mathf.RoundToInt(local.x / _cellSize), Mathf.RoundToInt(local.z / _cellSize));
             
             return Board != null && Board.IsInsideBoard(gridPos);
         }
