@@ -227,7 +227,7 @@ namespace BoardMatch.Core
             int yDiff = Math.Abs(a.y - b.y);
             return xDiff + yDiff == 1;
         }
-        private bool IsInsideBoard(Vector2Int pos)
+        public bool IsInsideBoard(Vector2Int pos)
         {
             return pos.x >= 0 && pos.x < _width && pos.y >= 0 && pos.y < _height;
         }

@@ -13,6 +13,9 @@ namespace BoardMatch.Game
 
        [Tooltip("Should new gems appear at the top of the board?")]
        public bool spawnAboveBoard = true;
+
+       [Tooltip("Approximately the size of each gem type")]
+       public int cellSize = 1;
     }
 
 }

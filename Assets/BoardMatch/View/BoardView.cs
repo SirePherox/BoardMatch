@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BoardMatch.Core;
 using BoardMatch.Game;
@@ -22,9 +23,13 @@ namespace BoardMatch.View
 
         public void Setup(BoardModel board)
         {
-            if (Board != null) Unsubscribe();
+            if (Board != null) UnsubscribeFromBoard();
             
             DefaultValues();
+            Board = board;
+            BuildInitialGrid();
+            SubscribeToBoard();
+
         }
 
         private void DefaultValues()
@@ -33,10 +38,32 @@ namespace BoardMatch.View
             {
                 moveDuration = gameConfig.moveDuration;
                 clearDuration = gameConfig.clearDuration;
+                cellSize = gameConfig.cellSize;
             }
            
         }
-        private void Unsubscribe()
+
+        private void BuildInitialGrid()
+        {
+            for (int x = 0; x < Board.Width; x++)
+            {
+                for (int y = 0; y < Board.Height; y++)
+                {
+                    var gridPos = new Vector2Int(x, y);
+                    SpawnGemView(gridPos, Board.GemType(gridPos));
+                }
+            }
+        }
+
+        private void SubscribeToBoard()
+        {
+            Board.OnGemSwapped += HandleGemsSwapped;
+            Board.OnMatchesCleared += HandleMatchesCleared;
+            Board.OnGemsFell += HandleGemsFell;
+            Board.OnGemsSpawned += HandleGemsSpawned;
+        }
+        
+        private void UnsubscribeFromBoard()
         {
             Board.OnGemSwapped -= HandleGemsSwapped;
             Board.OnMatchesCleared -= HandleMatchesCleared;
@@ -122,6 +149,21 @@ namespace BoardMatch.View
         {
             Vector3 origin = boardOrigin ? boardOrigin.position : Vector3.zero;
             return origin + new Vector3(gridPos. x * cellSize, gridPos.y * cellSize, 0f);
+        }
+
+        public bool TryGetGridPosition(Vector3 worldPos, out Vector2Int gridPos)
+        {
+            Vector3 origin = boardOrigin ? boardOrigin.position : Vector3.zero;
+            Vector3 local = worldPos - origin;
+            
+            gridPos = new Vector2Int(Mathf.RoundToInt(local.x / cellSize), Mathf.RoundToInt(local.z / cellSize));
+            
+            return Board != null && Board.IsInsideBoard(gridPos);
+        }
+
+        private void OnDestroy()
+        {
+            if(Board != null) UnsubscribeFromBoard();
         }
     }
 }
