@@ -221,7 +221,7 @@ namespace BoardMatch.Core
             return verticalRun >= _minMatchCount;
         }
 
-        private bool AreAdjacent(Vector2Int a, Vector2Int b)
+        public bool AreAdjacent(Vector2Int a, Vector2Int b)
         {
             int xDiff = Math.Abs(a.x - b.x);
             int yDiff = Math.Abs(a.y - b.y);
