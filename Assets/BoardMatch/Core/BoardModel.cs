@@ -1,9 +1,14 @@
 using System;
+using System.Collections.Generic;
 using BoardMatch.Utilities;
 using UnityEngine;
 
 namespace BoardMatch.Core
 {
+    /// <summary>
+    /// y is vertical, y = 0 is the bottom row. Gravity pulls gems toward
+    /// y = 0; new gems conceptually enter from the top (y = Height - 1).
+    /// </summary>
     public sealed class BoardModel
     {
         [Header("Board Settings")]
@@ -18,9 +23,14 @@ namespace BoardMatch.Core
         [Header("Variables")] 
         private const int MaxAttemptPerCell = 200; //while populating
         public const int EmptyCell = -1;
-        //EVENTS
+        
+        #region -Events-
         public event Action<Vector2Int, Vector2Int> OnGemSwapped; //From -> To
-
+        public event Action<List<Match>> OnMatchesCleared;
+        public event Action<List<GemFall>> OnGemsFell;
+        public event Action<List<GemSpawn>> OnGemsSpawned;
+        #endregion
+        
         public BoardModel(MatchConfig config, IRandomGemProvider randomGemProvider)
         {
             #region - Validity Check-
@@ -99,6 +109,85 @@ namespace BoardMatch.Core
             }
         }
 
+        //Would normally be called after the first manual match
+        private int ResolveCascade(List<Match> initialMatches)
+        {
+            int totalCleared = 0;
+            var matches = initialMatches;
+
+            while (matches.Count > 0)
+            {
+                totalCleared += ClearMatches(matches);
+                ApplyGravity();
+                RefillEmptyCells();
+                matches = MatchFinder.FindAllMatches(_grid, _width, _height, _minMatchCount);
+            }
+            
+            return totalCleared;
+        }
+
+        private void ApplyGravity()
+        {
+            var falls = new List<GemFall>();
+
+            for (int x = 0; x < _width; x++)
+            {
+                int writeY = 0;
+                for (int y = 0; y < _height; y++)
+                {
+                    if (_grid[x, y] == EmptyCell) continue;
+                    if (writeY != y)
+                    {
+                        int gemType = _grid[x, y];
+                        _grid[x, writeY] = gemType;
+                        _grid[x, y] = EmptyCell;
+                        falls.Add(new GemFall(new Vector2Int(x,y), new Vector2Int(x, writeY), gemType));
+                    }
+                    writeY++;
+                }
+            }
+            
+            if (falls.Count > 0) OnGemsFell?.Invoke(falls);
+        }
+
+        private void RefillEmptyCells()
+        {
+            var spawns = new List<GemSpawn>();
+
+            for (int x = 0; x < _width; x++)
+            {
+                for (int y = 0; y < _height; y++)
+                {
+                    if (_grid[x, y] != EmptyCell) continue;
+                    
+                    int gemType = _randomGemProvider.GetRandomGem(_availableGemTypes);
+                    _grid[x, y] = gemType;
+                    spawns.Add(new GemSpawn(new Vector2Int(x, y), gemType));
+                }
+            }
+            
+            if(spawns.Count > 0) OnGemsSpawned?.Invoke(spawns);
+        }
+        private int ClearMatches(List<Match> matches)
+        {
+            var uniqueCells = new HashSet<Vector2Int>();
+
+            foreach (var match in matches)
+            {
+                foreach (var cell in match.Cells)
+                {
+                    uniqueCells.Add(cell);
+                }
+            }
+
+            foreach (var cell in uniqueCells)
+            {
+                _grid[cell.x, cell.y] = EmptyCell;
+            }
+            
+            OnMatchesCleared?.Invoke(matches);
+            return uniqueCells.Count;
+        }
         
         private void SwapCells(Vector2Int from, Vector2Int to)
         {
@@ -145,6 +234,22 @@ namespace BoardMatch.Core
         public int GemType (Vector2Int pos) => _grid[pos.x, pos.y];
         public int Width => _width;
         public int Height => _height;
+        
+        
+        //---------------Tests ONLY-------------
+        private void SetGridForTesting(int[,] source)
+        {
+            for (int x = 0; x < _width; x++)
+                for (int y = 0; y < _height; y++)
+                    _grid[x, y] = source[x, y];
+        }
+
+        private int[,] GetGridForTesting()
+        {
+            var copy = new int[_width, _height];
+            Array.Copy(_grid, copy, _grid.Length);
+           return copy;
+        }
     }
 
 }
