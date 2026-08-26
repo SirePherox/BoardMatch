@@ -61,6 +61,7 @@ namespace BoardMatch.Core
             _height = config.height;
             _grid = new int[_width, _height];
             _availableGemTypes = (int[])config.availableGemTypes.Clone();
+            _randomGemProvider = randomGemProvider;
             
             PopulateBoardUniquely();
         }

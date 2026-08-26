@@ -13,7 +13,7 @@ namespace BoardMatch.Core
         public int GetRandomGem(int[] availableGemTypes);
     }
 
-    public class UnityRandomGemProvider : IRandomGemProvider
+    public sealed class UnityRandomGemProvider : IRandomGemProvider
     {
         //Allows for deterministic generation, e.g, for testing purposes
         public UnityRandomGemProvider(int? seed = null)
