@@ -35,7 +35,7 @@ namespace BoardMatch.Game
         {
             if(_boardVisualizer == null || _boardVisualizer.Board == null) return;
 
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButtonDown(0))
             {
                 HandleClick(Input.mousePosition); //Todo move to New input system
             }

@@ -16,6 +16,9 @@ namespace BoardMatch.Game
 
        [Tooltip("Approximately the size of each gem type")]
        public int cellSize = 1;
+
+       [Tooltip("Seed can be used to generate deterministic randoms. Leave at -1 to use real random")]
+       public int boardSeed = -1;
     }
 
 }

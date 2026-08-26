@@ -106,6 +106,8 @@ namespace BoardMatch.Core
                         gemType = _randomGemProvider.GetRandomGem(_availableGemTypes);
                         attempts++;
                     }
+                    
+                    _grid[x, y] = gemType;
                 }
             }
         }
@@ -245,7 +247,7 @@ namespace BoardMatch.Core
                     _grid[x, y] = source[x, y];
         }
 
-        private int[,] GetGridForTesting()
+        public int[,] GetGridForTesting()
         {
             var copy = new int[_width, _height];
             Array.Copy(_grid, copy, _grid.Length);
