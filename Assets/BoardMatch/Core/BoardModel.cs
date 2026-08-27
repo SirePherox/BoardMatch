@@ -271,7 +271,7 @@ namespace BoardMatch.Core
         
         
         //---------------Tests ONLY-------------
-        private void SetGridForTesting(int[,] source)
+        public void SetGridForTesting(int[,] source)
         {
             for (int x = 0; x < _width; x++)
                 for (int y = 0; y < _height; y++)
@@ -282,8 +282,9 @@ namespace BoardMatch.Core
         {
             var copy = new int[_width, _height];
             Array.Copy(_grid, copy, _grid.Length);
-           return copy;
+            return copy;
         }
+        
     }
 
 }

@@ -1,0 +1,18 @@
+{
+    "name": "BoardMatch.Tests.EditMode",
+    "rootNamespace": "",
+    "references": [
+        "GUID:255170f9778d2424dae1f34040355f3a"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
