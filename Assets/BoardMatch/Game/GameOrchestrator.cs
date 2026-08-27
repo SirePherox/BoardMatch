@@ -20,7 +20,8 @@ namespace BoardMatch.Game
         
         private void Start()
         {
-           SetupAGame();
+            Application.targetFrameRate = 60;
+            SetupAGame();
         }
 
         private void Update()
