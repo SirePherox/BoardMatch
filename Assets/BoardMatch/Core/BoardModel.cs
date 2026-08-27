@@ -79,8 +79,7 @@ namespace BoardMatch.Core
             var matches = MatchFinder.FindAllMatches(_grid, _width, _height, _minMatchCount);
             if (matches.Count == 0)
             {
-                MatchLog.Log("No valid matches. Reverting back");
-                SwapCells(a, b);
+                SwapCells(a, b); //No valid matches. Reverting back
                 return false;
             }
             
