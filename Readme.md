@@ -13,6 +13,10 @@ In Unity, right-click in the Project window and go to **Create > BoardMatch >**
    spawned, the size of gems and use seed to generate deterministic boards ![GameConfig](docs/GameConfig.png)
 
 ### Test Devices:
-The Apk build has been tested on :
+The Apk build has been tested and ran smoothly on these devices (59 - 60fps):
 1. Samsung Galaxy S23 Ultra(12GB/256GB)
-2. TECNO Pop7 (3GB/64GB)
+2. TECNO Pop7 (3GB/64GB) 
+
+
+### Gameplay Video:
+![BoardMatch-Demo](docs/BoardMatch.gif)
