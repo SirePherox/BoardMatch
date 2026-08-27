@@ -1,4 +1,5 @@
 using System;
+using BoardMatch.Utilities;
 using BoardMatch.View;
 using UnityEngine;
 
@@ -8,12 +9,14 @@ namespace BoardMatch.Game
     {
         [Header("References")]
         [SerializeField] private Camera mainCamera;
+        [SerializeField] private GameObject selectionRing;
         
         [Header("Variables")]
         private IBoardVisualizer _boardVisualizer;
         private Vector2Int _selectedCell;
         private bool _hasSelection;
-
+        private Vector3 _clickWorldPos;
+        
         private void Update()
         {
             HandleClicksInUpdate();
@@ -45,22 +48,30 @@ namespace BoardMatch.Game
         {
             if(!mainCamera) return;
             
-            Vector3 worldPos = mainCamera.ScreenToWorldPoint(mousePosition);
-            worldPos.z = 0;
+            _clickWorldPos = mainCamera.ScreenToWorldPoint(mousePosition);
+            _clickWorldPos.z = 0;
 
-            if (!_boardVisualizer.TryGetGridPosition(worldPos, out Vector2Int clickedCell))
+            if (!_boardVisualizer.TryGetGridPosition(_clickWorldPos,
+                    out Vector2Int clickedCell))
+            {
                 return;
+            }
+                
 
             if (!_hasSelection)
             {
                 _selectedCell = clickedCell;
                 _hasSelection = true;
+                
+                SelectItem();
                 return;
             }
 
             if (_selectedCell == clickedCell)
             {
                 _hasSelection = false; //deselect
+                _selectedCell = new Vector2Int(-1, -1);
+                Deselect();
                 return;
             }
 
@@ -68,11 +79,28 @@ namespace BoardMatch.Game
             {
                 _boardVisualizer.Board.TrySwapCells(_selectedCell, clickedCell);
                 _hasSelection = false;
+                Deselect();
             }
             else
             {
                 _selectedCell = clickedCell; //new selection
+                SelectItem();
             }
+        }
+
+        private void SelectItem()
+        {
+            if (!selectionRing || _boardVisualizer == null) return;
+            
+            selectionRing.SetActive(true);
+            selectionRing.transform.position = _boardVisualizer.GetWorldPosition(_selectedCell);
+        }
+
+        private void Deselect()
+        {
+            if (!selectionRing || _boardVisualizer == null) return;
+            
+            selectionRing.SetActive(false);
         }
     }
 

@@ -156,7 +156,9 @@ namespace BoardMatch.View
             Vector3 origin = boardOrigin ? boardOrigin.position : Vector3.zero;
             Vector3 local = worldPos - origin;
             
-            gridPos = new Vector2Int(Mathf.RoundToInt(local.x / _cellSize), Mathf.RoundToInt(local.z / _cellSize));
+            gridPos = new Vector2Int(
+                Mathf.RoundToInt(local.x / _cellSize),
+                Mathf.RoundToInt(local.y / _cellSize));
             
             return Board != null && Board.IsInsideBoard(gridPos);
         }

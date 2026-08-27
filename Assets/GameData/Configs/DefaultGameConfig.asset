@@ -16,3 +16,4 @@ MonoBehaviour:
   clearDuration: 0.1
   spawnAboveBoard: 1
   cellSize: 1
+  boardSeed: -1
